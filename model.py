@@ -78,3 +78,12 @@ Train-Test Split done
 Dropped 1 rows with insufficient class members.
 Training Rows: 89756
 Testing Rows:  22439
+ Re-mapping labels to start at 0 (Required for Keras/TensorFlow)
+# This turns label 1 -> 0 and label 2 -> 1
+y_train = y_train - 1
+y_test = y_test - 1
+
+print("Labels re-mapped to [0, 1]")
+print(f"New unique labels in training: {np.unique(y_train)}")
+Labels re-mapped to [0, 1]
+New unique labels in training: [0 1]
