@@ -22,3 +22,27 @@ df = pd.read_csv(path, sep='|')
 df.columns = df.columns.str.strip()
 print("Data Shape:", df.shape)
 Data Shape: (7, 2)
+
+df.isnull().sum()
+Feature Name    0
+Description     0
+dtype: int64
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+
+# 1. Fill missing values (just in case there are any after the correct load)
+df = df.fillna(df.mode().iloc[0])
+
+# 2. Label Encoding
+le = LabelEncoder()
+categorical_cols = df.select_dtypes(include=['object']).columns
+for col in categorical_cols:
+    df[col] = le.fit_transform(df[col].astype(str))
+
+# 3. Normalization
+scaler = MinMaxScaler()
+numeric_cols = df.select_dtypes(include=['number']).columns
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+
+print("Data processing complete!")
+Data processing complete!
