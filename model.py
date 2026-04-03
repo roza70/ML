@@ -138,3 +138,52 @@ print("\n" + "="*40)
 # Optional: Print detailed report for RF
 print("\nDetailed Classification Report (Random Forest):")
 print(classification_report(y_test, rf_preds))
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+
+# 1. Get CNN Predictions
+print("Generating CNN predictions...")
+cnn_preds_prob = cnn.predict(X_test_cnn)
+cnn_preds = np.argmax(cnn_preds_prob, axis=1)
+
+# 2. Setup Plotting Area
+fig, ax = plt.subplots(2, 2, figsize=(16, 14))
+
+# --- CHART A: Random Forest Confusion Matrix ---
+cm_rf = confusion_matrix(y_test, rf_preds)
+sns.heatmap(cm_rf, annot=True, fmt='d', cmap='Blues', ax=ax[0, 0])
+ax[0, 0].set_title(f'Random Forest Confusion Matrix\n(Accuracy: {rf_acc:.2%})')
+ax[0, 0].set_xlabel('Predicted Label')
+ax[0, 0].set_ylabel('True Label')
+
+# --- CHART B: CNN Confusion Matrix ---
+cm_cnn = confusion_matrix(y_test, cnn_preds)
+sns.heatmap(cm_cnn, annot=True, fmt='d', cmap='Greens', ax=ax[0, 1])
+ax[0, 1].set_title(f'CNN Confusion Matrix\n(Accuracy: {cnn_acc:.2%})')
+ax[0, 1].set_xlabel('Predicted Label')
+ax[0, 1].set_ylabel('True Label')
+
+# --- CHART C: Overall Accuracy Comparison ---
+models = ['Random Forest', 'CNN']
+accuracies = [rf_acc, cnn_acc]
+sns.barplot(x=models, y=accuracies, palette='magma', ax=ax[1, 0])
+ax[1, 0].set_title('Model Accuracy Comparison')
+ax[1, 0].set_ylim(0, 1.0)
+for i, v in enumerate(accuracies):
+    ax[1, 0].text(i, v + 0.02, f"{v:.2%}", ha='center', fontweight='bold')
+
+# --- CHART D: Top 20 Feature Importance (RF) ---
+importances = rf.feature_importances_
+indices = np.argsort(importances)[-20:] # Get indices of top 20
+ax[1, 1].barh(range(len(indices)), importances[indices], color='teal', align='center')
+
+ax[1, 1].set_yticks(range(len(indices)))
+ax[1, 1].set_yticklabels([f"Feature {i}" for i in indices])
+ax[1, 1].set_title('Top 20 Most Predictive Features')
+ax[1, 1].set_xlabel('Relative Importance')
+
+plt.tight_layout()
+plt.show()
