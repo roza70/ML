@@ -87,3 +87,54 @@ print("Labels re-mapped to [0, 1]")
 print(f"New unique labels in training: {np.unique(y_train)}")
 Labels re-mapped to [0, 1]
 New unique labels in training: [0 1]
+
+
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+# 1. RANDOM FOREST (Fast and Accurate for 471 features)
+print("Training Random Forest on 112,196 rows...")
+rf = RandomForestClassifier(n_estimators=50, max_depth=10, random_state=42, n_jobs=-1)
+rf.fit(X_train, y_train)
+rf_preds = rf.predict(X_test)
+rf_acc = accuracy_score(y_test, rf_preds)
+
+print(f"\n[RF] Accuracy: {rf_acc:.4f}")
+
+# 2. CNN (Deep Learning)
+print("\nPreparing CNN (Reshaping data)...")
+X_train_cnn = np.expand_dims(X_train.values, axis=-1)
+X_test_cnn = np.expand_dims(X_test.values, axis=-1)
+num_classes = len(np.unique(y_train))
+
+# Simplified CNN for high-dimensional feature vectors
+cnn = models.Sequential([
+    layers.Input(shape=(X_train_cnn.shape[1], 1)),
+    layers.Conv1D(16, 3, activation='relu'),
+    layers.GlobalAveragePooling1D(), # Better for large feature sets
+    layers.Dense(32, activation='relu'),
+    layers.Dense(num_classes, activation='softmax')
+])
+
+cnn.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+print("Training CNN (5 Epochs)...")
+cnn.fit(X_train_cnn, y_train, epochs=5, batch_size=64, validation_split=0.1, verbose=1)
+
+cnn_acc = cnn.evaluate(X_test_cnn, y_test, verbose=0)[1]
+
+
+print("\n" + "="*40)
+print("  FINAL RESULTS")
+print("="*40)
+print(f"Random Forest Accuracy: {rf_acc*100:.2f}%")
+print(f"CNN Accuracy:           {cnn_acc*100:.2f}%")
+print("\n" + "="*40)
+
+
+# Optional: Print detailed report for RF
+print("\nDetailed Classification Report (Random Forest):")
+print(classification_report(y_test, rf_preds))
