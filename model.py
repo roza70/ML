@@ -16,3 +16,9 @@ import os
 path = "/kaggle/input/datasets/agungpambudi/secure-intrusion-detection-ddos-attacks-profiling"
 print(os.listdir(path))
 ['data-dictionary.csv', 'ddos-attacks-profiling']
+import pandas as pd
+path = "/kaggle/input/datasets/agungpambudi/secure-intrusion-detection-ddos-attacks-profiling/data-dictionary.csv"
+df = pd.read_csv(path, sep='|') 
+df.columns = df.columns.str.strip()
+print("Data Shape:", df.shape)
+Data Shape: (7, 2)
