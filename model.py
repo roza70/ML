@@ -10,3 +10,9 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 import os
+
+import os
+
+path = "/kaggle/input/datasets/agungpambudi/secure-intrusion-detection-ddos-attacks-profiling"
+print(os.listdir(path))
+['data-dictionary.csv', 'ddos-attacks-profiling']
